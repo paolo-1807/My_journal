@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Journal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <span>ID: 000</span>
+    <span>12/04/2026</span>
+  </div>
+
+  <!-- Masthead -->
+  <div class="masthead">
+    <h1>My Journal</h1>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- The world in brief -->
+  <div class="world-brief">
+    <div class="section-title">The world in brief</div>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eros mi, vestibulum nec nibh ac, suscipit ultrices nisi. Curabitur quis mi id libero sagittis vestibulum eget laoreet tortor. Ut at lacinia tortor. Vestibulum ut est vitae nisi dictum mollis. Donec nec risus sed risus finibus pretium ac ac nunc. Suspendisse sollicitudin eget massa eu accumsan. Cras eget sodales dolor. Nulla facilisi. Suspendisse potenti. Mauris in pretium purus, a ultrices mauris. Integer euismod lacus felis, et vulputate est luctus vel. Nam eleifend odio vitae tortor varius tempus. Sed sed magna tristique, viverra ipsum et, euismod turpis. Morbi porta cursus sem, sed porta massa fringilla tristique.</p>
+    <p>Nam tempor ligula quis arcu scelerisque hendrerit. Aliquam vitae quam lobortis sapien euismod mattis. Proin et sem ac urna bibendum sodales ut vitae augue. Quisque posuere vel sem sagittis malesuada. Sed mattis urna sit amet lorem imperdiet, sit amet suscipit erat feugiat. Proin ac sodales dui. Curabitur auctor elementum mauris at consectetur. In sollicitudin lorem quis ante tempor, ut volutpat eros hendrerit.</p>
+  </div>
+
+  <!-- Portfolio review + ATP Tour -->
+  <div class="two-col">
+    <div class="portfolio-left vertical-divider-red">
+      <div class="portfolio-title">Portfolio review</div>
+
+      <div class="portfolio-row">
+        <span class="asset">S&amp;P 500 etf:</span>
+        <span class="{{ sp500_color_daily }}">{{ sp500_daily }}% (oggi)</span> |
+        <span class="{{ sp500_color_total }}">{{ sp500_total }}% (assoluto)</span>
+    </div>
+      <div class="portfolio-row">
+        <span class="asset">STOXX 600 etf:</span>
+        <span class="up">+1.7% (oggi)</span> |
+        <span class="down">-1.6% (assoluto)</span>
+      </div>
+      <div class="portfolio-row">
+        <span class="asset">Philip Morris:</span>
+        <span class="up">+8.2% (oggi)</span> |
+        <span class="down">-2.3% (assoluto)</span>
+      </div>
+      <div class="portfolio-row">
+        <span class="asset">Asset futuro:</span>
+        <span class="neutral">+0% (oggi)</span> |
+        <span class="neutral">+0% (assoluto)</span>
+      </div>
+      <div class="portfolio-row">
+        <span class="asset">Asset futuro 2:</span>
+        <span class="neutral">+0% (oggi)</span> |
+        <span class="neutral">+0% (assoluto)</span>
+      </div>
+
+      <div class="portfolio-body">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eros mi, vestibulum nec nibh ac, suscipit ultrices nisi. Curabitur quis mi id libero sagittis vestibulum eget laoreet tortor. Ut at lacinia tortor. Vestibulum ut est vitae nisi dictum mollis. Donec nec risus sed risus finibus pretium ac ac nunc. Suspendisse sollicitudin eget massa eu accumsan. Cras eget sodales dolor. Nulla facilisi. Suspendisse potenti. Mauris in pretium purus, a ultrices mauris. Integer euismod lacus felis, et vulputate est luctus vel. Nam eleifend odio vitae tortor varius tempus. Sed sed magna tristique, viverra ipsum et, euismod turpis. Morbi porta cursus sem, sed porta massa fringilla tristique.
+        <br><br>
+        Nam tempor ligula quis arcu scelerisque hendrerit. Aliquam vitae quam lobortis sapien euismod mattis. Proin et sem ac urna bibendum sodales ut vitae augue. Quisque posuere vel.
+      </div>
+    </div>
+
+    <div class="portfolio-right">
+      <span class="section-label">atp tour</span>
+    </div>
+  </div>
+
+  <!-- News Economia -->
+  <div class="news-economia-block">
+    <span class="section-label">news<br>economia</span>
+  </div>
+
+  <!-- Meteo + Salute -->
+  <div class="bottom-row">
+    <div class="meteo-block">
+      <span class="section-label">meteo</span>
+    </div>
+    <div class="salute-block">
+      <span class="section-label">salute</span>
+    </div>
+  </div>
+
+  <hr class="footer-line">
+
+</div>
+</body>
+</html>

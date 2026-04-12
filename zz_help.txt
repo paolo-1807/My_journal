@@ -1,0 +1,17 @@
+pip install -r requirements.txt
+
+
+CONTENUTI JOURNAL_AI:
+1. news
+2. meteo: milano, belgi, sharm
+3. atp tour
+4. calendario
+5. salute
+6. economia
+7. miei investimenti
+
+NOTE:
+- tools.finance_api.py funziona primo poi bisonga aggiustare il cambio valuta. i ticker dei miei 
+    investimenti specifici sono scritti sia nel codice del tool che nel codice di config.py
+- dovrei ridurre i token del prompt da dare in pasto all'agent
+- template figo deve inserire i placeholder e ridimensionarlo affinché stia centrato nel pdf

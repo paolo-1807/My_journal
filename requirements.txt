@@ -1,0 +1,11 @@
+openai
+python-dotenv
+yfinance
+pandas
+numpy
+datetime
+typing
+fpdf2
+jinja2 
+weasyprint
+python 
