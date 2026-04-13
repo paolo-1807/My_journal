@@ -1,6 +1,5 @@
+# tools/finance_api.py
 """
-investment_tool.py
-==================
 Tool per l'estrazione di dati finanziari da Yahoo Finance.
 Progettato per essere chiamato da un agent AI che compone
 il report mattutino del giornale personale.
@@ -18,20 +17,12 @@ import pandas as pd
 import numpy as np
 import requests
 from datetime import datetime, timedelta
-from typing import Optional
-
+from typing import Optional, List, Dict
+from config import I_MIEI_INVESTIMENTI
 
 # ─────────────────────────────────────────────
 # CONFIGURAZIONE
 # ─────────────────────────────────────────────
-
-# Mappa ticker → nome leggibile (personalizza con i tuoi asset)
-ASSET_NAMES: dict[str, str] = {
-    "SXR8.DE":   "S&P 500 ETF",
-    "LYP6.DE":   "STOXX 600 ETF",
-    "4I1.DE":  "Philip Morris",
-    # ← aggiungi i tuoi ticker qui
-}
 
 # Benchmark di default per settore
 SECTOR_BENCHMARKS: dict[str, str] = {
@@ -189,7 +180,7 @@ def get_asset_report(
     except Exception:
         info = {}
 
-    readable_name = ASSET_NAMES.get(ticker) or info.get("longName") or info.get("shortName") or ticker
+    readable_name = info.get(ticker) or info.get("longName") or info.get("shortName") or ticker
     currency = info.get("currency", "USD")
     asset_type = info.get("quoteType", "N/A")
     sector = info.get("sector", "N/A")
@@ -340,73 +331,19 @@ def get_asset_report(
 # BATCH: più asset in una sola chiamata
 # ─────────────────────────────────────────────
 
-def get_portfolio_report(
-    assets: list[dict],
-    benchmark: Optional[str] = None,
-) -> list[dict]:
-    """
-    Genera report per un intero portafoglio.
-
-    Args:
-        assets: lista di dict con chiavi:
-                - "ticker"    (str, obbligatorio)
-                - "pmc"       (float, opzionale)
-                - "benchmark" (str, opzionale)
-        benchmark: benchmark globale di fallback
-
-    Returns:
-        Lista ordinata di report, uno per asset.
-
-    Esempio:
-        assets = [
-            {"ticker": "AAPL", "pmc": 150.0},
-            {"ticker": "SPY",  "pmc": 430.0, "benchmark": "SPY"},
-            {"ticker": "BTC-USD"},
-        ]
-        reports = get_portfolio_report(assets)
-    """
+def get_portfolio_report() -> list[dict]:
+   
     reports = []
-    for asset in assets:
-        ticker    = asset.get("ticker", "")
-        pmc       = asset.get("pmc")
-        bench     = asset.get("benchmark") or benchmark
-        if not ticker:
-            continue
-        report = get_asset_report(ticker=ticker, pmc=pmc, benchmark=bench)
+    for asset in I_MIEI_INVESTIMENTI:
+        ticker = asset["ticker"]
+        nome = asset.get("nome", ticker)
+        pmc = asset.get("pmc")
+        
+       # Chiama la funzione di analisi per il singolo ticker
+        report = get_asset_report(ticker=ticker, pmc=pmc)
+        
+        # Sovrascriviamo il nome con quello 'volgare' del config
+        report["nome"] = nome 
         reports.append(report)
     return reports
 
-
-# ─────────────────────────────────────────────
-# UTILIZZO DI ESEMPIO
-# ─────────────────────────────────────────────
-
-if __name__ == "__main__":
-    import json
-
-    # Esempio singolo asset
-    print("=== REPORT SINGOLO ASSET ===\n")
-    report = get_asset_report(
-        ticker="AAPL",
-        pmc=150.0,
-        benchmark="QQQ",
-    )
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-
-    print("\n\n=== REPORT PORTAFOGLIO ===\n")
-    portfolio = get_portfolio_report([
-        {"ticker": "SPY",     "pmc": 430.0},
-        {"ticker": "NVDA",    "pmc": 500.0},
-        {"ticker": "BTC-USD", "pmc": 45000.0},
-    ])
-    for r in portfolio:
-        print(f"\n── {r['nome']} ({r['ticker']}) ──")
-        print(f"  Prezzo:      {r['prezzo_attuale']} {r['valuta']}")
-        print(f"  Daily:       {r['delta_daily']['variazione_pct']}% {r['delta_daily']['direzione']}")
-        print(f"  vs PMC:      {r['delta_pmc']['stato']}  ({r['delta_pmc']['variazione_pct']}%)")
-        print(f"  RSI:         {r['rsi']['valore']} → {r['rsi']['stato']}")
-        print(f"  Range 30gg:  {r['range_30_giorni']['percentuale_nel_range']}% → {r['range_30_giorni']['zona']}")
-        print(f"  Benchmark:   {r['benchmark']['sintesi']}")
-        print(f"  Notizie:")
-        for n in r["notizie_recenti"]:
-            print(f"    • [{n.get('fonte','?')}] {n.get('titolo','N/A')}")

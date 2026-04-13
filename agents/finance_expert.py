@@ -1,192 +1,126 @@
+# agents/finance_expert.py
 """
-morning_agent.py
-================
-Agent AI per il report mattutino degli investimenti.
-Usa OpenAI GPT-4o per analizzare i dati estratti da investment_tool.py
-e produrre un briefing narrativo in tre sezioni.
+finance_expert.py
+=================
+Agent semplificato per il report mattutino degli investimenti.
+Chiama direttamente get_portfolio_report() e passa i dati a GPT-4o
+per produrre un briefing narrativo in prosa.
 
 Dipendenze:
-    pip install openai yfinance pandas numpy
+    pip install openai yfinance pandas numpy python-dotenv
 
 Utilizzo:
-    python morning_agent.py
+    python finance_expert.py
 
 Variabili d'ambiente richieste:
     OPENAI_API_KEY=sk-...
-    (oppure inseriscila direttamente in config.py)
 """
-
+import sys
 import os
 import json
 from datetime import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from tools.finance_api import get_portfolio_report
-from config import I_MIEI_INVESTIMENTI
 
 load_dotenv()
+
 # ─────────────────────────────────────────────
 # CONFIGURAZIONE
 # ─────────────────────────────────────────────
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  
-MODEL          = "gpt-4o"
-LINGUA         = "italiano"
-NOME_UTENTE    = "Paolo"  
-
-client = OpenAI(api_key=OPENAI_API_KEY)
+MODEL       = "gpt-4o"
+LINGUA      = "italiano"
+NOME_UTENTE = "Paolo"
+client      = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # ─────────────────────────────────────────────
-# TOOLS DEFINITION (OpenAI function calling)
-# ─────────────────────────────────────────────
-
-TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_portfolio_report",
-            "description": (
-                "Recupera dati finanziari aggiornati per una lista di asset dal portafoglio "
-                "dell'utente. Ritorna per ciascun asset: prezzo, delta daily, delta vs PMC, "
-                "RSI, posizione nel range 30gg, benchmark comparison e ultime notizie."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "assets": {
-                        "type": "array",
-                        "description": "Lista degli asset da analizzare",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "ticker": {"type": "string", "description": "Simbolo Yahoo Finance"},
-                                "pmc":    {"type": "number",  "description": "Prezzo medio di carico"},
-                            },
-                            "required": ["ticker"],
-                        },
-                    }
-                },
-                "required": ["assets"],
-            },
-        },
-    }
-]
-
-
-# ─────────────────────────────────────────────
-# SYSTEM PROMPT
+# PROMPT
 # ─────────────────────────────────────────────
 
 SYSTEM_PROMPT = f"""
-Sei l'analista finanziario di {NOME_UTENTE}. Scrivi in {LINGUA}, prima persona plurale, stile "The Economist": analitico, asciutto, senza bullet point.
-STRUTTURA TESTO UNICO (Max 150 parole):
-Protagonista: Narra l'asset con la variazione più critica. Spiega il "perché" integrando le news, evitando la ripetizione dei prezzi grezzi.
-Salute (RSI/Range): Valuta ipercomprato (>70) o ipervenduto (<30) basandoti su RSI e range 30gg. Se neutrale, sii sintetico.
-Contesto & Benchmark: Confronta il portafoglio ai mercati globali. Usa i titoli macro (BCE/Inflazione) per definire il sentiment. Chiudi con una sintesi fulminea.
-VINCOLI:
-Prosa fluente, NO liste, NO disclaimer legali.
-Usa metafore finanziarie vivide.
-Lunghezza massima totale: simile a 2 paragrafi standard.
-Se i dati mancano, non inventare.
+Sei l'analista finanziario personale di {NOME_UTENTE}.
+Scrivi in {LINGUA}, in prima persona plurale, con lo stile de "The Economist":
+analitico, asciutto, senza bullet point, senza disclaimer legali.
+
+Riceverai un JSON con i dati aggiornati del portafoglio. Producendo un testo unico
+di massimo 150 parole, strutturato in due paragrafi:
+
+1. PROTAGONISTA — Narra l'asset con la variazione più critica (positiva o negativa).
+   Integra le notizie recenti per spiegare il "perché". Evita di ripetere i prezzi grezzi:
+   usa variazioni percentuali e contesto.
+
+2. CONTESTO & SALUTE — Commenta RSI e posizione nel range 30gg per segnalare
+   zone di ipercomprato/ipervenduto. Confronta il portafoglio ai rispettivi benchmark.
+   Chiudi con una sintesi fulminea sul sentiment complessivo.
+
+Regole ferree:
+- Prosa fluente, zero liste.
+- Usa metafore finanziarie vivide ma non ridondanti.
+- Se un dato è assente nel JSON, ignoralo senza inventare nulla.
+- Non menzionare mai il formato JSON né il tuo funzionamento interno.
 """
 
-# ─────────────────────────────────────────────
-# ESECUZIONE DEL TOOL (function calling handler)
-# ─────────────────────────────────────────────
-
-def _execute_tool(tool_name: str, arguments: dict) -> str:
-    """Esegue il tool richiesto dall'agent e ritorna il risultato come JSON string."""
-    if tool_name == "get_portfolio_report":
-        result = get_portfolio_report(arguments["assets"])
-        return json.dumps(result, ensure_ascii=False, indent=2)
-    return json.dumps({"errore": f"Tool '{tool_name}' non riconosciuto."})
-
 
 # ─────────────────────────────────────────────
-# AGENT LOOP
+# FUNZIONE PRINCIPALE
 # ─────────────────────────────────────────────
 
 def run_morning_agent(verbose: bool = False) -> str:
     """
-    Esegue il loop dell'agent:
-    1. Invia il prompt iniziale a GPT-4o
-    2. Se l'agent chiama get_portfolio_report, esegue il tool e reinvia i dati
-    3. Riceve il report narrativo finale
-    4. Ritorna il testo del report
+    Esegue il report mattutino in due passi:
+      1. Recupera i dati tramite get_portfolio_report()
+      2. Invia i dati a GPT-4o e restituisce il testo narrativo
 
     Args:
-        verbose: se True, stampa i passaggi intermedi del loop
+        verbose: se True, stampa i dettagli intermedi
+
     Returns:
-        Il report mattutino come stringa Markdown
+        Il report mattutino come stringa di testo
     """
 
-    data_oggi = datetime.now().strftime("%A %d %B %Y, ore %H:%M")
+    # ── Step 1: raccogli i dati dal tool ──────
+    if verbose:
+        print("[Agent] Recupero dati portafoglio...")
 
-    # Messaggio iniziale: l'agent sa già quali asset analizzare
-    user_message = (
-        f"Buongiorno. Oggi è {data_oggi}. "
-        f"Recupera i dati aggiornati per il mio portafoglio e scrivi il report mattutino. "
-        f"Il portafoglio è: {json.dumps(I_MIEI_INVESTIMENTI, ensure_ascii=False)}"
-    )
-
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user",   "content": user_message},
-    ]
+    portfolio_data = get_portfolio_report()
 
     if verbose:
-        print(f"[Agent] Avvio — {data_oggi}")
+        print(f"[Agent] Dati ricevuti per {len(portfolio_data)} asset.")
 
-    # ── Loop agentico ─────────────────────────
-    max_iterations = 5  # guardrail anti-loop infinito
-    for iteration in range(max_iterations):
+    # ── Step 2: costruisci il prompt utente ───
+    data_oggi = datetime.now().strftime("%A %d %B %Y, ore %H:%M")
 
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-        )
+    user_message = (
+        f"Buongiorno. Oggi è {data_oggi}.\n\n"
+        f"Ecco i dati aggiornati del mio portafoglio:\n\n"
+        f"{json.dumps(portfolio_data, ensure_ascii=False, indent=2)}\n\n"
+        f"Scrivi il report mattutino."
+    )
 
-        msg = response.choices[0].message
+    # ── Step 3: chiama GPT-4o ─────────────────
+    if verbose:
+        print(f"[Agent] Invio dati a {MODEL}...")
 
-        # Caso 1: l'agent vuole chiamare un tool
-        if msg.tool_calls:
-            messages.append(msg)  # aggiungi il messaggio dell'assistant con tool_calls
+    response = client.chat.completions.create(
+        model=MODEL,
+        temperature=0.5,       # un po' di vivacità stilistica, senza allucinazioni
+        max_tokens=400,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user",   "content": user_message},
+        ],
+    )
 
-            for tool_call in msg.tool_calls:
-                fn_name = tool_call.function.name
-                fn_args = json.loads(tool_call.function.arguments)
+    report = response.choices[0].message.content or "[Errore] Nessun output ricevuto."
 
-                if verbose:
-                    print(f"[Agent] Chiama tool: {fn_name}({list(fn_args.keys())})")
+    if verbose:
+        print(f"[Agent] Report generato ({len(report)} caratteri).")
 
-                tool_result = _execute_tool(fn_name, fn_args)
-
-                if verbose:
-                    print(f"[Agent] Tool completato — {len(tool_result)} caratteri ricevuti")
-
-                messages.append({
-                    "role":         "tool",
-                    "tool_call_id": tool_call.id,
-                    "content":      tool_result,
-                })
-
-            # continua il loop per ottenere la risposta finale
-            continue
-
-        # Caso 2: l'agent ha prodotto il report finale
-        if msg.content:
-            if verbose:
-                print(f"[Agent] Report generato ({len(msg.content)} caratteri)")
-            return msg.content
-
-        # Caso 3: risposta vuota (non dovrebbe accadere)
-        return "[Errore] L'agent non ha prodotto output."
-
-    return "[Errore] Numero massimo di iterazioni raggiunto senza output finale."
+    return report
 
 
 # ─────────────────────────────────────────────
@@ -207,11 +141,4 @@ if __name__ == "__main__":
     print(report)
     print("─" * 60)
 
-    # Salva il report su file (opzionale)
-    output_dir = "reports"
-    os.makedirs(output_dir, exist_ok=True)
-    filename = f"{output_dir}/report_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.md"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(f"# Report Investimenti — {datetime.now().strftime('%d %B %Y')}\n\n")
-        f.write(report)
-    print(f"\n✅ Report salvato in: {filename}")
+  
