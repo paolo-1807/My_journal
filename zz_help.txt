@@ -15,3 +15,5 @@ NOTE:
     investimenti specifici sono scritti sia nel codice del tool che nel codice di config.py
 - dovrei ridurre i token del prompt da dare in pasto all'agent
 - template figo deve inserire i placeholder e ridimensionarlo affinché stia centrato nel pdf
+- uso github e ogni mattina mi arriva il link con il gioranle del giorno
+    fare index.html e il file yaml 

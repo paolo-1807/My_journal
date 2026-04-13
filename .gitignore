@@ -1,0 +1,12 @@
+# Nascondi file segreti con le chiavi API
+.env
+
+# Nascondi le cartelle temporanee di Python
+__pycache__/
+*.pyc
+
+# Nascondi i report locali (li genereremo online)
+reports/
+output/
+
+    

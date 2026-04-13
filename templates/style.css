@@ -1,217 +1,94 @@
-@page {
-    size: A4;
-    margin: 0;
-  }
- * { margin: 0; padding: 0; box-sizing: border-box; }
+/* 1. Pulizia iniziale: togliamo i margini di default del browser */
+body{
+    margin:0;
+    padding:0;
+    background-color: #ffffff;
+}
 
-  body {
-    font-family: 'Georgia', serif;
-    background: #f5f0e8;
-    color: #1a1a1a;
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
-  .page {
-    width: 210mm;
-    height: 297mm;
-    padding: 15mm 18mm;
+/* questa è la scatola centrale, i margini insomma*/
+.container {
+    width: 210mm; /*larghezza*/
+    min-height: 297mm;
+    padding: 10mm 15mm; /* Spazio interno tra il bordo del rettangolo e il testo */
     margin: 20px auto;    /* <-- MODIFICA QUESTA RIGA: 20px sopra/sotto, auto ai lati */
+    background-color: #f5f0e8;
     box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Opzionale: aggiunge un'ombra leggera per far sembrare il foglio reale */
-    box-sizing: border-box;
+    box-sizing: border-box; /*fa si che non si supero mai la larhezza totale*/
 }
-  /* Header */
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    font-family: 'Arial', sans-serif;
+
+/*Stile specifico per l'Header Giornale*/
+.giornale-header {
+    text-align: center;  /* Centra gli elementi di base */
+    margin-bottom: 20mm;  /* Distanza tra header e testo, come già deciso */
+}
+
+/*Allineamento Metadati (ID e Data) */
+.meta-info {
+    display: flex;  /* Il trucco per allineare gli span sulla stessa riga */
+    justify-content: space-between; /*Spinge ID a sinistra e Data a destra */
+    
+    font-family: 'Arial', sans-serif; 
+    font-size: 13px;
+    font-weight: bold;  
+    color: #333;    
+    margin-bottom: 5px;   
+    padding: 0 5mm; 
+}
+
+/*Lo stile del Titolo */
+.titolo-giornale h1 {
+    font-family: 'Georgia', serif; 
+    color: #b22222;           
+    font-size: 52px;     
+    text-align: center;     
+    text-transform: uppercase; /* Tutto maiuscolo */
+    letter-spacing: 3px;       /* Un po' di spaziatura tra le lettere */
+    margin: 5px 0;             /* Pochissimo spazio sopra/sotto il testo */
+}
+
+/*Le due linee rosse in alto, usiamo i bordi della scatola titolo-sezione */
+.titolo-giornale {
+    border-top: 3px solid #b22222;    /* Linea superiore */
+    border-bottom: 3px solid #b22222; /* Linea inferiore */
+    padding: 10px 0; /* Spazio tra la linea e il testo h1 */
+    
+    /* Le linee dell'immagine non sono larghe quanto tutto il foglio. 
+       Diamo al titolo un po' di margine laterale per "staccare" le linee dai bordi del foglio. */
+    margin: 0 5mm; 
+}
+
+
+/* sezione con solo testo */
+.sezione-giornale-st {
+    margin-bottom: 30px; /* Spazio tra una sezione e l'altra */
+    text-align: center;  /* Serve a centrare il titolo h2 */
+}
+
+/* Titolo della sezione (Grassetto e al centro) */
+.titolo-paragrafo {
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
     color: #333;
-    border-bottom: 2px solid #b22222; /* Spessore 2px e Rosso */
-    padding-bottom: 6px;              /* Spazio tra testo e linea */
-    margin-bottom: 6px;
-  }
-
-  .masthead {
-    text-align: center;
-    margin-bottom: 4px;
-  }
-
-  .masthead h1 {
-    font-family: 'Georgia', serif;
-    font-size: 46px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    color: #b22222;
-    text-transform: uppercase;
-    line-height: 1.1;
-  }
-
-  .vertical-divider-red {
-    position: relative;    /* Necessario per posizionare la linea rispetto a questo div */
-    padding-right: 20px; 
-    margin-right: 20px;
+    margin-bottom: 10px; /* Spazio tra titolo e testo */
 }
 
-.vertical-divider-red::after {
-    content: "";           /* Crea l'elemento visivo */
-    position: absolute;    /* Lo rende libero di muoversi */
-    right: 0;              /* Lo attacca al bordo destro */
-    
-    /* Gestione altezza: 1cm = circa 38px */
-    top: 2mm;             /* Distanza dall'alto */
-    bottom: 2mm;          /* Distanza dal basso */
-    
-    width: 2px;            /* Lo spessore della linea */
-    background-color: #b22222; /* Il colore rosso */
+/* Paragrafo (Giustificato e a capo) */
+.testo-paragrafo {
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: justify; /* Testo allineato sia a destra che a sinistra */
+    color: #444;
+    margin-bottom: 20px; /* Spazio prima della linea */
+    hyphens: auto;       /* Sillabazione automatica per un look da giornale */
+    margin-left: 5mm; 
+    margin-right: 5mm;
 }
 
-  .section-divider {
-    border: none;
-    border-top: 2px solid #b22222;
-    margin: 6px 0;
-  }
-
-  .section-divider-thin {
-    border: none;
-    border-top: 1px solid #ccc;
-    margin: 10px 0;
-  }
-
-  /* World in brief */
-  .world-brief {
-    margin-left: auto;   /* Spinge da sinistra verso il centro */
-    margin-right: auto;  /* Spinge da destra verso il centro */
-    margin-bottom: 18px; /* Mantiene lo spazio sotto */
-    
-    width: 95%;          /* Esempio: il box occupa l'95% della pagina */
-    max-width: 180mm;    /* Sicurezza per non farlo uscire dal foglio A4 */
+/* La linea rossa di chiusura */
+.linea-chiusura {
+    border-bottom: 2px solid #a52a2a; /* Stesso colore e spessore dell'header */
+    margin: 0 5mm; /* Leggero rientro laterale come nell'immagine dell'header */
 }
-  .section-title {
-    text-align: center;
-    font-size: 15px;
-    font-weight: bold;
-    font-family: 'Georgia', serif;
-    margin-bottom: 8px;
-    color: #1a1a1a;
-  }
-
-  .world-brief p {
-    text-align: justify;
-    margin-bottom: 8px;
-    font-size: 12.5px;
-    hyphens: auto;
-  }
-
-  /* Portfolio review */
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    border-top: 2px solid #b22222;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 0;
-  }
-
-  .portfolio-left {
-    padding: 10px 12px 10px 0;
-    display: flex;
-    flex-direction: column;  /* Mette gli elementi uno sotto l'altro */
-    align-items: center;      /* Centra tutto orizzontalmente */
-    text-align: center;       /* Centra il testo dentro le righe */
-    padding: 10px;            /* Spazio interno uniforme */
-  }
-
-  .portfolio-right {
-    padding: 10px 0 10px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .portfolio-title {
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    font-family: 'Georgia', serif;
-  }
-
-  .portfolio-row {
-    font-family: 'Arial', sans-serif;
-    font-size: 11.5px;
-    margin-bottom: 5px;        /* Aumentato leggermente per dare aria */
-    color: #222;
-    width: fit-content;        /* Fondamentale: la riga stringe attorno al testo */
-    text-align: left;          /* Mantiene i dati allineati tra loro */
-    white-space: nowrap;       /* Evita che i dati vadano a capo male */
-}
-  .portfolio-row span.asset {
-    font-weight: bold;
-  }
-
-  .up { color: #1a7a1a; }
-  .down { color: #b22222; }
-  .neutral { color: #888; }
-
-  .portfolio-body {
-    margin-top: 10px;
-    font-size: 12px;
-    text-align: justify;
-    border-top: 1px solid #ccc;
-    padding-top: 8px;
-  }
-
-  .section-label {
-    font-family: 'Georgia', serif;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-  }
-
-  /* Lower grid */
-  .lower-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    border-top: 1px solid #ccc;
-  }
-
-  .news-economia-block {
-    border-bottom: 1px solid #ccc;
-    padding: 28px 12px;
-    min-height: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .bottom-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border-top: 1px solid #ccc;
-  }
-
-  .meteo-block {
-    border-right: 1px solid #ccc;
-    padding: 28px 12px;
-    min-height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .salute-block {
-    padding: 28px 12px;
-    min-height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Footer red line */
-  .footer-line {
-    border: none;
-    border-top: 2px solid #b22222;
-    margin-top: 20px;
-  }
