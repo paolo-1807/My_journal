@@ -1,4 +1,7 @@
 pip install -r requirements.txt
+git add .
+git commit -m "messaggio"
+git push
 
 
 CONTENUTI JOURNAL_AI:
@@ -11,9 +14,9 @@ CONTENUTI JOURNAL_AI:
 7. miei investimenti
 
 NOTE:
-- tools.finance_api.py funziona primo poi bisonga aggiustare il cambio valuta. i ticker dei miei 
-    investimenti specifici sono scritti sia nel codice del tool che nel codice di config.py
-- dovrei ridurre i token del prompt da dare in pasto all'agent
-- template figo deve inserire i placeholder e ridimensionarlo affinché stia centrato nel pdf
+- tools.finance_api.py funziona primo poi bisonga aggiustare il cambio valuta. 
+- ottimzzare i token del prompt da dare in pasto all'agent
 - uso github e ogni mattina mi arriva il link con il gioranle del giorno
-    fare index.html e il file yaml 
+    fare index.html e il file yaml  DAFARE
+- il css non va su github perchè nelgli output
+- domani: creare pagina per la portfolio review
