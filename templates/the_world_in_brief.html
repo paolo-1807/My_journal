@@ -22,26 +22,14 @@
         </header>
         <main>
             <section class="sezione-giornale">
-                <h2 class="titolo-paragrafo">Portfolio Review</h2>
+                <h2 class="titolo-paragrafo">The world in biref</h2>
                 <div class="linea-chiusura-piccola"></div>
-                <p class="testo-paragrafo">
-                    {% for item in lista_investimenti %}
-                        <span class="riga-asset">
-                            <span class="nome-asset">{{ item.nome }}</span> :
-                            <span class="variazione">{{ item.oggi }}</span> (oggi) |
-                            <span class="variazione">{{ item.assoluto }}</span> (assoluta)
-                        </span>
-                    {% endfor %}
-                </p>
-                <div class="linea-chiusura-piccola"></div>
-            </section>
-            <section class="sezione-giornale">
-                <p class="testo-paragrafo">
-                    {{ contenuto_portfolio_review }}
-                </p>
-                <div class="linea-chiusura-grande"></div>
-            </section>
-            </main>   
+                <section class="sezione-giornale">
+                    <p class="testo-paragrafo">
+                        {{ contenuto_portfolio_review }}
+                    </p>
+                    <div class="linea-chiusura-grande"></div>
+                </section>
+                </main>   
+    </body>
     
-
-</body>

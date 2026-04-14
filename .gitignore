@@ -1,6 +1,8 @@
 # Nascondi file segreti con le chiavi API
 .env
 config.py
+credentials.json
+token.json
 
 # Nascondi le cartelle temporanee di Python
 __pycache__/

@@ -56,15 +56,15 @@ def genera_pag_2(info_giornale):
         env = Environment(loader=FileSystemLoader("templates"))
         template = env.get_template("portfolio_review.html")
         try:
-            contenuto_sezione_2 = run_morning_agent(verbose=False)
+            contenuto_portfolio_review = run_morning_agent(verbose=False)
         except Exception as agent_error:
-            contenuto_sezione_2 = f"Sezione analitica non disponibile: {agent_error}"
+            contenuto_portfolio_review = f"Sezione analitica non disponibile: {agent_error}"
 
         html_output = template.render(
             id_giornale=info_giornale.get("id", "N/A"),
             data_generazione=info_giornale.get("data", "N/A"),
             lista_investimenti=lista_investimenti,
-            contenuto_sezione_2=contenuto_sezione_2,
+            contenuto_portfolio_review=contenuto_portfolio_review,
         )
 
         os.makedirs("output", exist_ok=True)
