@@ -19,4 +19,5 @@ NOTE:
 - uso github e ogni mattina mi arriva il link con il gioranle del giorno
     fare index.html e il file yaml  DAFARE
 - il css non va su github perchè nelgli output
-- domani: creare pagina per la portfolio review
+- domani: tradurre con api Deepl, popolare anche l'index.tml
+- deepl ha la mia carta revolut

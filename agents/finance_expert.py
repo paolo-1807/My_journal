@@ -47,7 +47,7 @@ Scrivi in {LINGUA}, in prima persona plurale, con lo stile de "The Economist":
 analitico, asciutto, senza bullet point, senza disclaimer legali.
 
 Riceverai un JSON con i dati aggiornati del portafoglio. Producendo un testo unico
-di massimo 150 parole, strutturato in due paragrafi:
+di massimo 200 parole, strutturato in due paragrafi:
 
 1. PROTAGONISTA — Narra l'asset con la variazione più critica (positiva o negativa).
    Integra le notizie recenti per spiegare il "perché". Evita di ripetere i prezzi grezzi:
