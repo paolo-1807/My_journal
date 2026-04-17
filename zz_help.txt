@@ -18,6 +18,6 @@ NOTE:
 - ottimzzare i token del prompt da dare in pasto all'agent
 - uso github e ogni mattina mi arriva il link con il gioranle del giorno
     fare index.html e il file yaml  DAFARE
-- il css non va su github perchè nelgli output
+- gli output sono pubblici su github
 - domani: tradurre con api Deepl, popolare anche l'index.tml
 - deepl ha la mia carta revolut

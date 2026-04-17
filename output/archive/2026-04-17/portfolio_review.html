@@ -4,14 +4,14 @@
 <meta charset="UTF-8"> <!-- mi fa vedere bene emoji, accenti e cosi via  -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- responsive design, adatta su pc, ipad, ...  -->
 <title>My Journal</title> <!-- titolo della scheda quando apro il file sul browser  -->
-<link rel="stylesheet" href="../../style.css"> <!-- ci colleghiamo al file css  -->
+<link rel="stylesheet" href="../output/style.css"> <!-- ci colleghiamo al file css  -->
 </head>
 <body>  
     <div class="container">
         <header class="header-giornale">
             <div class="meta-info"> <!-- li mettiamo dentro questo contenitore-->
-                <span class="id-gionrale">ID: {{ id_giornale }}</span>
-                <span class="data-giorno">Data: {{ data_generazione }}</span>
+                <span class="id-gionrale">ID: GIO-20260417-154146</span>
+                <span class="data-giorno">Data: 2026-04-17</span>
             </div>
             
             <div class="titolo-giornale">
@@ -25,19 +25,31 @@
                 <h2 class="titolo-paragrafo">Portfolio Review</h2>
                 <div class="linea-chiusura-piccola"></div>
                 <p class="testo-paragrafo">
-                    {% for item in lista_investimenti %}
+                    
                         <span class="riga-asset">
-                            <span class="nome-asset">{{ item.nome }}</span> :
-                            <span class="variazione">{{ item.oggi }}</span> (oggi) |
-                            <span class="variazione">{{ item.assoluto }}</span> (assoluta)
+                            <span class="nome-asset">ETF S&P500</span> :
+                            <span class="variazione">+0.28%</span> (oggi) |
+                            <span class="variazione">+6.62%</span> (assoluta)
                         </span>
-                    {% endfor %}
+                    
+                        <span class="riga-asset">
+                            <span class="nome-asset">ETF STOXX 600</span> :
+                            <span class="variazione">+1.45%</span> (oggi) |
+                            <span class="variazione">+11.18%</span> (assoluta)
+                        </span>
+                    
+                        <span class="riga-asset">
+                            <span class="nome-asset">Philip Morris</span> :
+                            <span class="variazione">-0.60%</span> (oggi) |
+                            <span class="variazione">-12.98%</span> (assoluta)
+                        </span>
+                    
                 </p>
                 <div class="linea-chiusura-piccola"></div>
             </section>
             <section class="sezione-giornale">
                 <p class="testo-paragrafo">
-                    {{ contenuto_portfolio_review }}
+                    open_api disattivata
                 </p>
                 <div class="linea-chiusura-grande"></div>
             </section>

@@ -19,13 +19,15 @@ import sys
 import os
 import json
 from datetime import datetime
+from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from tools.finance_api import get_portfolio_report
 
-load_dotenv()
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
 
 # ─────────────────────────────────────────────
 # CONFIGURAZIONE
@@ -34,7 +36,7 @@ load_dotenv()
 MODEL       = "gpt-4o"
 LINGUA      = "italiano"
 NOME_UTENTE = "Paolo"
-client      = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+OPENAI_DISABLED_MESSAGE = "open_api disattivata"
 
 
 # ─────────────────────────────────────────────
@@ -81,6 +83,19 @@ def run_morning_agent(verbose: bool = False) -> str:
     Returns:
         Il report mattutino come stringa di testo
     """
+    use_openai_agent = os.getenv("USE_OPENAI_AGENT", "0") == "1"
+    if not use_openai_agent:
+        if verbose:
+            print("[Agent] USE_OPENAI_AGENT disattivato: salto chiamata OpenAI.")
+        return OPENAI_DISABLED_MESSAGE
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        if verbose:
+            print("[Agent] OPENAI_API_KEY mancante: salto chiamata OpenAI.")
+        return "Sezione analitica non disponibile."
+
+    client = OpenAI(api_key=api_key)
 
     # ── Step 1: raccogli i dati dal tool ──────
     if verbose:

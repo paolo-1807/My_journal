@@ -8,8 +8,6 @@ token.json
 __pycache__/
 *.pyc
 
-# Nascondi i report locali (li genereremo online)
-reports/
-output/
+
 
     

@@ -15,16 +15,19 @@ from __future__ import annotations
 import json
 import os
 import re
+from pathlib import Path
 from typing import Tuple
 
 from dotenv import load_dotenv
 from openai import OpenAI
 
 
-load_dotenv()
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
 
 USE_OPENAI_AGENT = os.getenv("USE_OPENAI_AGENT", "0") == "1"
 MODEL = os.getenv("CHIEF_EDITOR_MODEL", "gpt-4o")
+OPENAI_DISABLED_MESSAGE = "open_api disattivata"
 
 
 def _normalize_whitespace(text: str) -> str:
@@ -106,10 +109,7 @@ def run_chief_editor(
     if not USE_OPENAI_AGENT:
         if verbose:
             print("[chief_editor] USE_OPENAI_AGENT disattivato: fallback locale.")
-        return (
-            _clean_summary(world_src, max_words=100),
-            _clean_summary(portfolio_src, max_words=100),
-        )
+        return (OPENAI_DISABLED_MESSAGE, OPENAI_DISABLED_MESSAGE)
 
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:

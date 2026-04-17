@@ -15,7 +15,7 @@ if __package__ in (None, ""):
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env", override=True)
 
 from tools.finance_api import get_portfolio_report
 from tools.news_fetcher import main as fetch_world_in_brief
@@ -24,14 +24,13 @@ from agents.finance_expert import run_morning_agent
 from agents.chief_editor import run_chief_editor
 
 USE_OPENAI_AGENT = os.getenv("USE_OPENAI_AGENT", "0") == "1"
+OPENAI_DISABLED_MESSAGE = "open_api disattivata"
 
 
-def genera_pag_0(info_giornale, contenuto_the_world_in_brief, contenuto_portfolio_review):
+def genera_pag_0(contenuto_the_world_in_brief, contenuto_portfolio_review):
     """
-    Genera `output/index.html` usando `templates/index.html`.
+    Genera l'HTML della pagina index usando `templates/index.html`.
     """
-    if info_giornale is None:
-        info_giornale = {}
 
     try:
         env = Environment(loader=FileSystemLoader("templates"))
@@ -44,18 +43,14 @@ def genera_pag_0(info_giornale, contenuto_the_world_in_brief, contenuto_portfoli
         )
 
         html_output = template.render(
-            id_giornale=info_giornale.get("id", "N/A"),
-            data_generazione=info_giornale.get("data", "N/A"),
+            id_giornale="{{ID_GIORNALE}}",
+            data_generazione="{{DATA_GENERAZIONE}}",
             summary_the_world_in_brief=summary_world,
             summary_portfolio_review=summary_portfolio,
         )
-
-        os.makedirs("output", exist_ok=True)
-        with open("output/index.html", "w", encoding="utf-8") as f:
-            f.write(html_output)
-        print("Pagina 0 (Index) generata con successo!")
+        return html_output
     except Exception:
-        pass
+        return ""
 
 #Pagina The World in Brief
 def genera_pag_1():
@@ -72,29 +67,26 @@ def genera_pag_1():
         contenuto_html = Markup("<br><br>".join(str(escape(par)) for par in paragrafi))
 
         html_output = template.render(
-            id_giornale="N/A",
-            data_generazione="N/A",
+            id_giornale="{{ID_GIORNALE}}",
+            data_generazione="{{DATA_GENERAZIONE}}",
             contenuto_the_world_in_brief=contenuto_html,
         )
-
-        os.makedirs("output", exist_ok=True)
-        with open("output/the_world_in_brief.html", "w", encoding="utf-8") as f:
-            f.write(html_output)
-        print("Pagina 1 (The World in Brief) generata con successo!")
-        return contenuto
+        return {
+            "html": html_output,
+            "contenuto_the_world_in_brief": contenuto,
+        }
     except Exception as e:
-        return "Contenuto non disponibile."
+        return {
+            "html": "",
+            "contenuto_the_world_in_brief": "Contenuto non disponibile.",
+        }
 
 #pagina Portfolio Review
-def genera_pag_2(info_giornale):
+def genera_pag_2():
     """
     Genera `output/portfolio_review.html` usando il template attuale.
     Renderizza una riga per ogni investimento presente nel report.
     """
-
-    if info_giornale is None:
-        info_giornale = {}
-
     def _fmt_pct(value):
         if value is None:
             return "N/A"
@@ -125,33 +117,24 @@ def genera_pag_2(info_giornale):
             except Exception:
                 contenuto_portfolio_review = "Sezione analitica non disponibile."
         else:
-            contenuto_portfolio_review = "Sezione analitica disattivata in locale."
+            contenuto_portfolio_review = OPENAI_DISABLED_MESSAGE
 
         html_output = template.render(
-            id_giornale=info_giornale.get("id", "N/A"),
-            data_generazione=info_giornale.get("data", "N/A"),
+            id_giornale="{{ID_GIORNALE}}",
+            data_generazione="{{DATA_GENERAZIONE}}",
             lista_investimenti=lista_investimenti,
             contenuto_portfolio_review=contenuto_portfolio_review,
         )
-
-        os.makedirs("output", exist_ok=True)
-        with open("output/portfolio_review.html", "w", encoding="utf-8") as f:
-            f.write(html_output)
-        print("Pagina 2 (Portfolio) generata con successo!")
-        return contenuto_portfolio_review
+        return {
+            "html": html_output,
+            "contenuto_portfolio_review": contenuto_portfolio_review,
+        }
     except Exception as e:
-        return "Sezione analitica non disponibile."
+        return {
+            "html": "",
+            "contenuto_portfolio_review": OPENAI_DISABLED_MESSAGE,
+        }
 
 
 if __name__ == "__main__":
-    info_test = {
-        "id": "TEST",
-        "data": "2026-04-14",
-    }
-    contenuto_the_world_in_brief = genera_pag_1()
-    contenuto_portfolio_review = genera_pag_2(info_test)
-    genera_pag_0(
-        info_giornale=info_test,
-        contenuto_the_world_in_brief=contenuto_the_world_in_brief,
-        contenuto_portfolio_review=contenuto_portfolio_review,
-    )
+    pass

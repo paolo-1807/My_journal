@@ -1,0 +1,126 @@
+/* 1. Pulizia iniziale: togliamo i margini di default del browser */
+body{
+    margin:0;
+    padding:0;
+    background-color: #ffffff;
+}
+
+/* questa è la scatola centrale, i margini insomma*/
+.container {
+    width: 210mm; /*larghezza*/
+    min-height: 297mm;
+    padding: 10mm 15mm; /* Spazio interno tra il bordo del rettangolo e il testo */
+    margin: 20px auto;    /* <-- MODIFICA QUESTA RIGA: 20px sopra/sotto, auto ai lati */
+    background-color: #f5f0e8;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Opzionale: aggiunge un'ombra leggera per far sembrare il foglio reale */
+    box-sizing: border-box; /*fa si che non si supero mai la larhezza totale*/
+}
+
+/*Stile specifico per l'Header Giornale*/
+.giornale-header {
+    text-align: center;  /* Centra gli elementi di base */
+    margin-bottom: 20mm;  /* Distanza tra header e testo, come già deciso */
+}
+
+/*Allineamento Metadati (ID e Data) */
+.meta-info {
+    display: flex;  /* Il trucco per allineare gli span sulla stessa riga */
+    justify-content: space-between; /*Spinge ID a sinistra e Data a destra */
+    
+    font-family: 'Arial', sans-serif; 
+    font-size: 13px;
+    font-weight: bold;  
+    color: #333;    
+    margin-bottom: 5px;   
+    padding: 0 5mm; 
+}
+
+/*Lo stile del Titolo */
+.titolo-giornale h1 {
+    font-family: 'Georgia', serif; 
+    color: #b22222;           
+    font-size: 52px;     
+    text-align: center;     
+    text-transform: uppercase; /* Tutto maiuscolo */
+    letter-spacing: 3px;       /* Un po' di spaziatura tra le lettere */
+    margin: 5px 0;             /* Pochissimo spazio sopra/sotto il testo */
+}
+
+/*Le due linee rosse in alto, usiamo i bordi della scatola titolo-sezione */
+.titolo-giornale {
+    border-top: 3px solid #b22222;    /* Linea superiore */
+    border-bottom: 3px solid #b22222; /* Linea inferiore */
+    padding: 10px 0; /* Spazio tra la linea e il testo h1 */
+    
+    /* Le linee dell'immagine non sono larghe quanto tutto il foglio. 
+       Diamo al titolo un po' di margine laterale per "staccare" le linee dai bordi del foglio. */
+    margin: 0 5mm; 
+}
+
+
+/* sezione con solo testo */
+.sezione-giornale-st {
+    margin-bottom: 30px; /* Spazio tra una sezione e l'altra */
+    text-align: center;  /* Serve a centrare il titolo h2 */
+}
+
+/* Titolo della sezione (Grassetto e al centro) */
+.titolo-paragrafo {
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px; /* Spazio tra titolo e testo */
+}
+
+/* Paragrafo (Giustificato e a capo) */
+.testo-paragrafo {
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: center; 
+    color: #444;
+    margin-bottom: 20px; /* Spazio prima della linea */
+    hyphens: auto;       /* Sillabazione automatica per un look da giornale */
+    margin-left: 5mm; 
+    margin-right: 5mm;
+}
+
+/* La linea rossa di chiusura */
+.linea-chiusura {
+    border-bottom: 2px solid #a52a2a; /* Stesso colore e spessore dell'header */
+    margin: 0 5mm; /* Leggero rientro laterale come nell'immagine dell'header */
+}
+
+/*linea rossa sottile e corta*/
+.linea-chiusura-piccola {
+    border-bottom: 2px solid #a52a2a; 
+    margin: 0 40mm; /* Leggero rientro laterale come nell'immagine dell'header */
+}
+
+/*linea rossa spessa*/
+.linea-chiusura-grande {
+    border-bottom: 3px solid #a52a2a; 
+    margin: 0 5mm; /* Leggero rientro laterale come nell'immagine dell'header */
+}
+
+.riga-asset {
+    display: block;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    margin: 4px 5mm;
+}
+
+.nome-asset {
+    font-weight: bold;
+}
+
+.variazione {
+    font-weight: bold;
+}
+
+/* colori */
+.pos { color: #2e7d32; }      /* verde */
+.neg { color: #b22222; }      /* rosso coerente */
+.neutral { color: #6b6b6b; }  /* grigio */
