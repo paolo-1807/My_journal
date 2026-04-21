@@ -20,6 +20,9 @@ import base64
 import re
 import time
 import html
+import json
+import os
+import tempfile
 
 from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
@@ -37,23 +40,81 @@ LOOKBACK_HOURS = 22
 # ── Auth Gmail ────────────────────────────────────────────────────────────────
 
 def get_gmail_service():
-    """Restituisce un servizio Gmail autenticato usando token.json."""
+    """
+    Restituisce un servizio Gmail autenticato.
+
+    Ordine sorgenti token/credentials:
+    1) variabili ambiente (`GMAIL_TOKEN_JSON` / `GMAIL_CREDENTIALS_JSON`)
+    2) variabili ambiente base64 (`GMAIL_TOKEN_JSON_B64` / `GMAIL_CREDENTIALS_JSON_B64`)
+    3) file locali (`token.json` / `credentials.json`)
+    """
     creds = None
-    try:
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    except FileNotFoundError:
-        pass
+    token_json = _read_json_from_env("GMAIL_TOKEN_JSON", "GMAIL_TOKEN_JSON_B64")
+    if token_json:
+        creds = Credentials.from_authorized_user_info(token_json, SCOPES)
+    else:
+        try:
+            creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+        except FileNotFoundError:
+            pass
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open("token.json", "w") as f:
-            f.write(creds.to_json())
+            creds = _run_interactive_flow()
+        _persist_token_if_possible(creds)
 
     return build("gmail", "v1", credentials=creds)
+
+
+def _read_json_from_env(raw_var: str, b64_var: str) -> dict | None:
+    raw = os.getenv(raw_var)
+    if raw:
+        return json.loads(raw)
+
+    raw_b64 = os.getenv(b64_var)
+    if raw_b64:
+        decoded = base64.b64decode(raw_b64).decode("utf-8")
+        return json.loads(decoded)
+
+    return None
+
+
+def _run_interactive_flow() -> Credentials:
+    credentials_json = _read_json_from_env("GMAIL_CREDENTIALS_JSON", "GMAIL_CREDENTIALS_JSON_B64")
+    if credentials_json:
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            json.dump(credentials_json, tmp)
+            tmp_path = tmp.name
+        try:
+            flow = InstalledAppFlow.from_client_secrets_file(tmp_path, SCOPES)
+            return flow.run_local_server(port=0)
+        finally:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
+    if os.getenv("GITHUB_ACTIONS", "").lower() == "true":
+        raise RuntimeError(
+            "Token Gmail non valido/scaduto e login interattivo non disponibile in GitHub Actions. "
+            "Aggiorna il secret GMAIL_TOKEN_JSON (o GMAIL_TOKEN_JSON_B64) con un token che includa refresh_token."
+        )
+
+    flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+    return flow.run_local_server(port=0)
+
+
+def _persist_token_if_possible(creds: Credentials) -> None:
+    token_path = os.getenv("GMAIL_TOKEN_PATH", "token.json")
+    try:
+        with open(token_path, "w", encoding="utf-8") as f:
+            f.write(creds.to_json())
+    except OSError:
+        # In CI o su filesystem read-only non blocchiamo l'esecuzione:
+        # il refresh in memoria e' sufficiente per la run corrente.
+        pass
 
 
 # ── Ricerca email ─────────────────────────────────────────────────────────────
